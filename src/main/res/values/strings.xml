@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Fortune</string>
+    <string name="add_account">Add Account</string>
+    <string name="title_activity_add_account">AddAccountActivity</string>
+    <string name="add_account_name">Account Name</string>
+    <string name="add_account_balance">Starting Balance</string>
+    <string name="add_account_asset">Asset</string>
+    <string name="add_account_liability">Liability</string>
+    <string name="add_account_interest_rate">Annual Interest Rate</string>
+    <string name="add_transaction_scheduler">Add Transaction</string>
+    <string name="forecast_date_instructions">Select the date you wish to forecast through</string>
+    <string name="update_forecast_date">Set Forecast Date</string>
+
+    <string-array name="transaction_types">
+        <item>Income</item>
+        <item>Expense</item>
+        <item>Transfer</item>
+    </string-array>
+
+</resources>
