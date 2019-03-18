@@ -87,7 +87,6 @@ public class AccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account);
 
         mModel = ViewModelProviders.of(this).get(AccountManagerViewModel.class);
-        //mModel.init();
 
         mAccountManager = AccountManager.getInstance();
         mAccountId = (UUID) getIntent().getSerializableExtra(SummaryActivity.EXTRA_SUM_ACCOUNT_ID);
@@ -191,15 +190,11 @@ public class AccountActivity extends AppCompatActivity {
         Date d1 = calendar.getTime();
 
         double total = 0;
-        int liabilityModifier = 1;
-        if(mAccount.isLiability())
-        {
-            //liabilityModifier = -1;
-        }
+
         mAccountManager.UpdateForecast(mAccountManager.getForecastDate());
         ArrayList<Transaction> allTransactions = new ArrayList<>();
 
-        total += liabilityModifier*mAccount.getStartingBalance();
+        total += mAccount.getStartingBalance();
         allTransactions.addAll(mAccountManager.GetAllTransactionsForAccount(mAccount));
 
         allTransactions.sort(Transaction.postedDateCompare);
@@ -212,11 +207,11 @@ public class AccountActivity extends AppCompatActivity {
         {
             if(t.getAccountFrom().equals(mAccount))
             {
-                total -= liabilityModifier*t.getAmount();
+                total -= t.getAmount();
             }
             else
             {
-                total += liabilityModifier*t.getAmount();
+                total += t.getAmount();
             }
 
             calendar.set(t.getPostedDate().getYear(),
@@ -369,7 +364,7 @@ public class AccountActivity extends AppCompatActivity {
                 switch (resultCode)
                 {
                     case RESULT_OK:
-                        UUID destAccountId = (UUID) data.getSerializableExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_DEST_ACC_ID);;
+                        UUID destAccountId = (UUID) data.getSerializableExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_DEST_ACC_ID);
                         Account accountFrom, accountTo;
 
                         if(data.getBooleanExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_IN_ACC, false))
@@ -396,7 +391,6 @@ public class AccountActivity extends AppCompatActivity {
                         mAccountTransactions.add(ts);
                         mAccountTransactions.sort(TransactionScheduler.transactionSchedulerComparator);
 
-                        //mAccAdapter.notifyItemInserted(mAccountTransactions.size()-1);
                         mAccAdapter.notifyDataSetChanged();
                         mModel.updateTransactionScheduler(ts);
                         updateSummaryGraph();
@@ -417,7 +411,7 @@ public class AccountActivity extends AppCompatActivity {
                             showOrHideTransactions();
                             break;
                         }
-                        UUID destAccountId = (UUID) data.getSerializableExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_DEST_ACC_ID);;
+                        UUID destAccountId = (UUID) data.getSerializableExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_DEST_ACC_ID);
                         Account accountFrom, accountTo;
 
                         if(data.getBooleanExtra(TransactionSchedulerAttributesActivity.EXTRA_ADD_TRN_IN_ACC, false))
@@ -594,31 +588,8 @@ public class AccountActivity extends AppCompatActivity {
             {
                 case VIEW_TRANSACTION:
                     TransactionScheduler ts = mDataSet.get(position);
-                    String transactionType = "";
-                    String dateRange = "";
+                    String dateRange;
                     String frequency = "";
-                    if(ts.getAccountFrom().equals(mAccountManager.getExpenseAccount()) ||
-                            ts.getAccountTo().equals(mAccountManager.getExpenseAccount()))
-                    {
-                        transactionType = "Expense";
-                    }
-                    else if(ts.getAccountFrom().equals(mAccountManager.getIncomeAccount()) ||
-                            ts.getAccountTo().equals(mAccountManager.getIncomeAccount()))
-                    {
-                        transactionType = "Income";
-                    }
-                    else
-                    {
-                        transactionType = "Transfer";
-                        if(ts.getAccountFrom().equals(mAccount))
-                        {
-                            transactionType += " to " + ts.getAccountTo().getAccountName();
-                        }
-                        else
-                        {
-                            transactionType += " from " + ts.getAccountFrom().getAccountName();
-                        }
-                    }
 
                     if(ts.getPeriod().equals(Period.ZERO))
                     {
