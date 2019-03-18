@@ -128,6 +128,11 @@ public class AccountCategory {
         return mDefaultInterestCompoundingFrequency;
     }
 
+    public static void reset()
+    {
+        mAccountCategories.clear();
+    }
+
     public static void addAccountCategory(AccountCategory ac)
     {
         if(mAccountCategories == null)

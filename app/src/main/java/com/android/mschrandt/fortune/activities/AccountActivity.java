@@ -50,6 +50,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.UUID;
 
 public class AccountActivity extends AppCompatActivity {
@@ -174,7 +175,7 @@ public class AccountActivity extends AppCompatActivity {
             @Override
             public void onTap(Series series, DataPointInterface dataPoint) {
                 Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy");
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yy", Locale.getDefault());
                 calendar.setTimeInMillis((long) dataPoint.getX());
                 mTextViewProjectionDate.setText(dateFormatter.format(calendar.getTime()));
                 mTextViewProjectionAmount.setText(NumberFormat.getCurrencyInstance().format(dataPoint.getY()));
@@ -192,10 +193,9 @@ public class AccountActivity extends AppCompatActivity {
         double total = 0;
 
         mAccountManager.UpdateForecast(mAccountManager.getForecastDate());
-        ArrayList<Transaction> allTransactions = new ArrayList<>();
+        ArrayList<Transaction> allTransactions = new ArrayList<>(mAccountManager.GetAllTransactionsForAccount(mAccount));
 
         total += mAccount.getStartingBalance();
-        allTransactions.addAll(mAccountManager.GetAllTransactionsForAccount(mAccount));
 
         allTransactions.sort(Transaction.postedDateCompare);
 

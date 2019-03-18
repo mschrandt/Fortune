@@ -35,6 +35,7 @@ public class AccountManagerRepository {
     public void loadAccountCategories()
     {
         List<AccountCategory> accCategories = accountManagerDao.getAccountCategories();
+        AccountCategory.reset();
         for(AccountCategory ac : accCategories)
         {
             AccountCategory.addAccountCategory(ac);
@@ -83,38 +84,6 @@ public class AccountManagerRepository {
                 });
             }
         });
-
-
-        /*
-        am = Transformations.switchMap(am, new Function<AccountManager, LiveData<AccountManager>>() {
-            @Override
-            public LiveData<AccountManager> apply(final AccountManager inputAm) {
-                if(inputAm == null)
-                {
-                    return null;
-                }
-
-                loadAccountCategories();
-
-                List<Account> accounts = accountManagerDao.getAccounts(inputAm.getAccountManagerId());
-
-                for (Account a : accounts) {
-                    inputAm.AddAccount(a);
-                }
-
-                List<TransactionScheduler> transactionSchedulers = accountManagerDao.getTransactionSchedulers(inputAm.getAccountManagerId());
-                for (TransactionScheduler ts : transactionSchedulers) {
-                    ts.setAccountFrom(inputAm.GetAccount(ts.getAccountIdFrom()));
-                    ts.setAccountTo(inputAm.GetAccount(ts.getAccountIdTo()));
-                    inputAm.AddScheduledTransaction(ts);
-                }
-
-                MutableLiveData<AccountManager> output = new MutableLiveData<>();
-                output.setValue(inputAm);
-                return output;
-            }
-        });*/
-
 
         return dataMerger;
     }
