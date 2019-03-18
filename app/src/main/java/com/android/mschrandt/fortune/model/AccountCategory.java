@@ -130,7 +130,10 @@ public class AccountCategory {
 
     public static void reset()
     {
-        mAccountCategories.clear();
+        if(mAccountCategories != null)
+        {
+            mAccountCategories.clear();
+        }
     }
 
     public static void addAccountCategory(AccountCategory ac)

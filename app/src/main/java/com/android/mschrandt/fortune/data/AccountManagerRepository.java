@@ -60,6 +60,10 @@ public class AccountManagerRepository {
         dataMerger.addSource(liveAccountManager, new Observer<AccountManager>() {
             @Override
             public void onChanged(@Nullable AccountManager accountManager) {
+                if(accountManager == null)
+                {
+                    return;
+                }
                 AccountManager.setInstance(accountManager);
                 executor.execute(new FortuneRunnable(accountManager, null,null) {
                     @Override
