@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -65,6 +66,7 @@ public class AccountActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_SET_DATE = 6;
     public static final String EXTRA_ACCOUNT_ID = "EXTRA_ACCOUNT_ID";
     public static final String EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID";
+    public final int GRAPH_LABEL_WIDTH = 160;
 
     // Data model
     private AccountManager mAccountManager;
@@ -84,6 +86,8 @@ public class AccountActivity extends AppCompatActivity {
     private LinearLayout mLinearLayoutProjectionText;
     private TextView mTextViewProjectionDate;
     private TextView mTextViewProjectionAmount;
+    private TextView mTextViewRefLine;
+    private float mLogicalDensity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +97,10 @@ public class AccountActivity extends AppCompatActivity {
         mAccountManager = AccountManager.getInstance();
         mModel = ViewModelProviders.of(this).get(AccountManagerViewModel.class);
         mModel.init();
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mLogicalDensity = metrics.density;
 
         mAccountId = (UUID) getIntent().getSerializableExtra(SummaryActivity.EXTRA_SUM_ACCOUNT_ID);
         mAccount = mAccountManager.GetAccount(mAccountId);
@@ -130,6 +138,7 @@ public class AccountActivity extends AppCompatActivity {
         mAccountGraphSeries.setDrawBackground(true);
 
         mLinearLayoutProjectionText = findViewById(R.id.projection_text);
+        mTextViewRefLine = findViewById(R.id.ref_line);
         mTextViewProjectionDate = findViewById(R.id.projection_date);
         mTextViewProjectionAmount = findViewById(R.id.projection_amount);
 
@@ -265,6 +274,10 @@ public class AccountActivity extends AppCompatActivity {
                 mLinearLayoutProjectionText.setX(Math.max(0,
                         Math.min(mConstraintLayoutAccount.getWidth()-mLinearLayoutProjectionText.getWidth(),
                                 event.getX()-mLinearLayoutProjectionText.getWidth()/2)));
+
+                mTextViewRefLine.setX(Math.max(GRAPH_LABEL_WIDTH+14*mLogicalDensity,
+                        Math.min(mConstraintLayoutAccount.getWidth()-14*mLogicalDensity,
+                                event.getX())));
 
                 switch(event.getAction())
                 {

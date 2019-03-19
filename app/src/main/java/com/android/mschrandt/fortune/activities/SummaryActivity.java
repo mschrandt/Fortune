@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -57,6 +58,7 @@ public class SummaryActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_VIEW = 2;
     public static final int REQUEST_CODE_SET_DATE = 3;
     public static final String EXTRA_SUM_ACCOUNT_ID = "EXTRA_SUM_ACCOUNT_ID";
+    private final int GRAPH_LABEL_WIDTH = 160;
 
     // Data model
     private AccountManagerViewModel mModel;
@@ -73,6 +75,8 @@ public class SummaryActivity extends AppCompatActivity {
     private LinearLayout mLinearLayoutProjectionText;
     private TextView mTextViewProjectionDate;
     private TextView mTextViewProjectionAmount;
+    private TextView mTextViewRefLine;
+    private float mLogicalDensity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,10 @@ public class SummaryActivity extends AppCompatActivity {
         mAccountManager.setForecastDate(LocalDate.now().plusYears(10));
         mModel = ViewModelProviders.of(this).get(AccountManagerViewModel.class);
         mModel.init();
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mLogicalDensity = metrics.density;
 
         mConstraintLayoutSummary = findViewById(R.id.summary_layout);
         mConstraintLayoutNoAccounts = findViewById(R.id.layout_no_account);
@@ -112,6 +120,7 @@ public class SummaryActivity extends AppCompatActivity {
 
         mSummaryGraphSeries.setDrawBackground(true);
         mLinearLayoutProjectionText = findViewById(R.id.projection_text);
+        mTextViewRefLine = findViewById(R.id.ref_line);
         mTextViewProjectionDate = findViewById(R.id.projection_date);
         mTextViewProjectionAmount = findViewById(R.id.projection_amount);
 
@@ -214,13 +223,14 @@ public class SummaryActivity extends AppCompatActivity {
     private void initializeSummaryGraph()
     {
         mLinearLayoutProjectionText.setVisibility(View.GONE);
+        mTextViewRefLine.setVisibility(View.GONE);
         mSummaryGraph.addSeries(mSummaryGraphSeries);
 
         mSummaryGraph.getGridLabelRenderer().setLabelFormatter(new DateCurrencyAxisLabelFormatter(SummaryActivity.this));
 
         mSummaryGraph.getGridLabelRenderer().setNumHorizontalLabels(4);
         mSummaryGraph.getGridLabelRenderer().setNumVerticalLabels(5);
-        mSummaryGraph.getGridLabelRenderer().setLabelVerticalWidth(160);
+        mSummaryGraph.getGridLabelRenderer().setLabelVerticalWidth(GRAPH_LABEL_WIDTH);
 
         Calendar calendar = Calendar.getInstance();
         Date d1 = calendar.getTime();
@@ -258,6 +268,7 @@ public class SummaryActivity extends AppCompatActivity {
                 mTextViewProjectionDate.setText(dateFormatter.format(calendar.getTime()));
                 mTextViewProjectionAmount.setText(NumberFormat.getCurrencyInstance().format(dataPoint.getY()));
                 mLinearLayoutProjectionText.setVisibility(View.VISIBLE);
+                mTextViewRefLine.setVisibility(View.VISIBLE);
             }
         });
     }
@@ -349,12 +360,18 @@ public class SummaryActivity extends AppCompatActivity {
             @Override
             public boolean onTouchEvent(MotionEvent event) {
 
+                // Position projection text
                 mLinearLayoutProjectionText.setY(Math.max(0,
                         Math.min(mSummaryGraph.getHeight()-mLinearLayoutProjectionText.getHeight(),
                                 event.getY()-(int)(mLinearLayoutProjectionText.getHeight()*2))));
                 mLinearLayoutProjectionText.setX(Math.max(0,
                         Math.min(mConstraintLayoutSummary.getWidth()-mLinearLayoutProjectionText.getWidth(),
                                 event.getX()-mLinearLayoutProjectionText.getWidth()/2)));
+
+                mTextViewRefLine.setX(Math.max(GRAPH_LABEL_WIDTH+14*mLogicalDensity,
+                        Math.min(mConstraintLayoutSummary.getWidth()-14*mLogicalDensity,
+                                event.getX())));
+
                 switch(event.getAction())
                 {
                     case MotionEvent.ACTION_MOVE:
