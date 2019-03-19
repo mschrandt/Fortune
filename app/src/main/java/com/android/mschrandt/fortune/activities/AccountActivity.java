@@ -1,9 +1,11 @@
 package com.android.mschrandt.fortune.activities;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.app.AlertDialog;
@@ -60,6 +62,7 @@ public class AccountActivity extends AppCompatActivity {
     public static final int REQUEST_CODE_EDIT_TRANSACTION = 2;
     public static final int REQUEST_CODE_ADD_ACCOUNT = 5;
     public static final int REQUEST_CODE_EDIT_ACCOUNT = 4;
+    public static final int REQUEST_CODE_SET_DATE = 6;
     public static final String EXTRA_ACCOUNT_ID = "EXTRA_ACCOUNT_ID";
     public static final String EXTRA_TRANSACTION_ID = "EXTRA_TRANSACTION_ID";
 
@@ -87,9 +90,10 @@ public class AccountActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
 
-        mModel = ViewModelProviders.of(this).get(AccountManagerViewModel.class);
-
         mAccountManager = AccountManager.getInstance();
+        mModel = ViewModelProviders.of(this).get(AccountManagerViewModel.class);
+        mModel.init();
+
         mAccountId = (UUID) getIntent().getSerializableExtra(SummaryActivity.EXTRA_SUM_ACCOUNT_ID);
         mAccount = mAccountManager.GetAccount(mAccountId);
 
@@ -128,6 +132,20 @@ public class AccountActivity extends AppCompatActivity {
         mLinearLayoutProjectionText = findViewById(R.id.projection_text);
         mTextViewProjectionDate = findViewById(R.id.projection_date);
         mTextViewProjectionAmount = findViewById(R.id.projection_amount);
+
+        mModel.getAccountManager().observe(this, new Observer<AccountManager>() {
+            @Override
+            public void onChanged(@Nullable AccountManager accountManager) {
+                if(accountManager != null)
+                {
+                    mAccountManager = accountManager;
+                }
+
+                initializeAccountGraph();
+                updateSummaryGraph();
+                showOrHideTransactions();
+            }
+        });
 
         initializeAccountGraph();
         updateSummaryGraph();
@@ -347,6 +365,10 @@ public class AccountActivity extends AppCompatActivity {
                         })
                         .show();
                 return true;
+            case R.id.menu_item_update_forecast:
+                Intent intentSetForecastDate = new Intent(this, ForecastDateActivity.class);
+                this.startActivityForResult(intentSetForecastDate, REQUEST_CODE_SET_DATE);
+                return true;
             case android.R.id.home:
                 finish();
                 return true;
@@ -459,6 +481,14 @@ public class AccountActivity extends AppCompatActivity {
                         updateSummaryGraph();
                         showOrHideTransactions();
                         break;
+                }
+                break;
+            case REQUEST_CODE_SET_DATE:
+                switch (resultCode)
+                {
+                    case RESULT_OK:
+                        mModel.updateForecastDate((LocalDate) data.getSerializableExtra(ForecastDateActivity.EXTRA_FORECAST_DATE));
+                        updateSummaryGraph();
                 }
                 break;
         }
