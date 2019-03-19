@@ -348,6 +348,13 @@ public class SummaryActivity extends AppCompatActivity {
         mSummaryGraph = new GraphView(this){
             @Override
             public boolean onTouchEvent(MotionEvent event) {
+
+                mLinearLayoutProjectionText.setY(Math.max(0,
+                        Math.min(mSummaryGraph.getHeight()-mLinearLayoutProjectionText.getHeight(),
+                                event.getY()-(int)(mLinearLayoutProjectionText.getHeight()*2))));
+                mLinearLayoutProjectionText.setX(Math.max(0,
+                        Math.min(mConstraintLayoutSummary.getWidth()-mLinearLayoutProjectionText.getWidth(),
+                                event.getX()-mLinearLayoutProjectionText.getWidth()/2)));
                 switch(event.getAction())
                 {
                     case MotionEvent.ACTION_MOVE:

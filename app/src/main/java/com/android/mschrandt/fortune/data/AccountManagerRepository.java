@@ -170,15 +170,4 @@ public class AccountManagerRepository {
             this.ts = ts;
         }
     }
-
-    private abstract class LiveDataRunnable implements Runnable
-    {
-        protected LiveData<AccountManager> am;
-
-        public LiveDataRunnable(LiveData am)
-        {
-            this.am = am;
-        }
-    }
-
 }

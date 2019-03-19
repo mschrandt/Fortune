@@ -133,20 +133,6 @@ public class AccountActivity extends AppCompatActivity {
         mTextViewProjectionDate = findViewById(R.id.projection_date);
         mTextViewProjectionAmount = findViewById(R.id.projection_amount);
 
-        mModel.getAccountManager().observe(this, new Observer<AccountManager>() {
-            @Override
-            public void onChanged(@Nullable AccountManager accountManager) {
-                if(accountManager != null)
-                {
-                    mAccountManager = accountManager;
-                }
-
-                initializeAccountGraph();
-                updateSummaryGraph();
-                showOrHideTransactions();
-            }
-        });
-
         initializeAccountGraph();
         updateSummaryGraph();
         showOrHideTransactions();
@@ -273,6 +259,13 @@ public class AccountActivity extends AppCompatActivity {
         mAccountGraph = new GraphView(this){
             @Override
             public boolean onTouchEvent(MotionEvent event) {
+                mLinearLayoutProjectionText.setY(Math.max(0,
+                        Math.min(mAccountGraph.getHeight()-mLinearLayoutProjectionText.getHeight(),
+                                event.getY()-(int)(mLinearLayoutProjectionText.getHeight()*2))));
+                mLinearLayoutProjectionText.setX(Math.max(0,
+                        Math.min(mConstraintLayoutAccount.getWidth()-mLinearLayoutProjectionText.getWidth(),
+                                event.getX()-mLinearLayoutProjectionText.getWidth()/2)));
+
                 switch(event.getAction())
                 {
                     case MotionEvent.ACTION_MOVE:
