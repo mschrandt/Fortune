@@ -366,11 +366,11 @@ public class SummaryActivity extends AppCompatActivity {
                                 event.getY()-(int)(mLinearLayoutProjectionText.getHeight()*2))));
                 mLinearLayoutProjectionText.setX(Math.max(0,
                         Math.min(mConstraintLayoutSummary.getWidth()-mLinearLayoutProjectionText.getWidth(),
-                                event.getX()-mLinearLayoutProjectionText.getWidth()/2)));
+                                event.getRawX()-mLinearLayoutProjectionText.getWidth()/2)));
 
                 mTextViewRefLine.setX(Math.max(GRAPH_LABEL_WIDTH+14*mLogicalDensity,
                         Math.min(mConstraintLayoutSummary.getWidth()-14*mLogicalDensity,
-                                event.getX())));
+                                event.getRawX())));
 
                 switch(event.getAction())
                 {

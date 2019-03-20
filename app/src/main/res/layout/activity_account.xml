@@ -92,12 +92,12 @@
         android:id="@+id/ref_line"
         android:layout_width="1dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginBottom="22dp"
         android:layout_marginTop="14dp"
         android:layout_weight="1"
         android:background="#000000"
         android:text="TextView"
-        app:layout_constraintBottom_toTopOf="@+id/transaction_recycler_view"
+        app:layout_constraintBottom_toBottomOf="@+id/account_graph"
         app:layout_constraintTop_toTopOf="parent"
         tools:layout_editor_absoluteX="66dp" />
 

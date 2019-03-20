@@ -40,8 +40,10 @@ public class AccountManagerViewModel extends AndroidViewModel {
 
     public void updateForecastDate(LocalDate forecastDate)
     {
-        accountManager.getValue().setForecastDate(forecastDate);
-        accountManagerRepo.updateAccountManager(accountManager.getValue());
+        AccountManager am = AccountManager.getInstance();
+        am.setForecastDate(forecastDate);
+
+        accountManagerRepo.updateAccountManager(am);
     }
 
     public void updateAccount(Account a)
@@ -62,10 +64,5 @@ public class AccountManagerViewModel extends AndroidViewModel {
     public void deleteTransactionScheduler(TransactionScheduler ts)
     {
         accountManagerRepo.deleteTransactionScheduler(ts);
-    }
-
-    public void deleteTransactionScheduler(UUID id)
-    {
-        accountManagerRepo.deleteTransactionScheduler(accountManager.getValue().getTransactionScheduler(id));
     }
 }
